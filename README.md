@@ -51,4 +51,4 @@ TBD
  
 ## Components
 
-- [api/commerce](pkg/api/commerce.go) - Commerce API News feed poller.
+- [feed/commerce](pkg/feed/commerce.go) - Commerce API News Feed puller and streamer.

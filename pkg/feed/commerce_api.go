@@ -1,9 +1,10 @@
-package api
+package feed
 
 import (
 	"errors"
 	"github.com/go-resty/resty/v2"
 	"gopkg.in/validator.v2"
+	"time"
 )
 
 type CommerceApi struct {
@@ -28,8 +29,13 @@ func NewCommerceApi(endpoint string, apiKey string) (*CommerceApi, error)  {
 
 func (api* CommerceApi) News() (string, error) {
 
+	client := resty.New()
+
+	// @ToDo: Externalize timeout configuration
+	client.SetTimeout(1 * time.Minute)
+
 	// @ToDo: Implement retry and back-off
-	resp, err := resty.New().R().
+	resp, err := client.R().
 		EnableTrace().
 		SetQueryParams(map[string]string{
 			"api_key": api.ApiKey,
