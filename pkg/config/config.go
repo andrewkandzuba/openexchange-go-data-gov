@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/vrischmann/envconfig"
 	"gopkg.in/yaml.v2"
-	"log"
 	"os"
 )
 
@@ -43,5 +42,5 @@ func readEnv(cfg *Config) {
 }
 
 func processError(err error) {
-	log.Panic(err)
+	panic(err)
 }
