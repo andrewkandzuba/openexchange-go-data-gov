@@ -2,6 +2,8 @@ package orm
 
 import (
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"os"
 	"testing"
 )
 
@@ -12,6 +14,17 @@ type Product struct {
 }
 
 func TestModel_Persist_Success(t *testing.T) {
+
+	dbFile := os.TempDir() + "/test.db"
+	db, err := gorm.Open("sqlite3", dbFile)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		db.Close()
+		os.Remove(dbFile)
+	}()
+
 	// Migrate the schema
 	db.AutoMigrate(&Product{})
 
