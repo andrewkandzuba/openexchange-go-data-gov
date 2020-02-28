@@ -46,15 +46,15 @@ func TestNewsFeedRepository_InsertArticle_Success(t *testing.T) {
 	repo, _ := NewNewsFeedRepository(db)
 
     err = repo.Insert(&Article{
-		ExternalId:     "12",
-		UUID:           "595b7871-b652-4c06-80b9-6260db2cd4e6",
-		Type:           "",
-		Label:          "",
-		Created:        0,
-		Update:         0,
-		Href:           "",
-		Body:           "",
-		Status:         "",
+		ExternalId: "12",
+		UUID:       "595b7871-b652-4c06-80b9-6260db2cd4e6",
+		Type:       "",
+		Label:      "",
+		Created:    0,
+		Updated:    0,
+		Href:       "",
+		Body:       "",
+		Status:     "",
 		AdminOfficials: []AdminOfficial{
 			{
 				ExternalId: "9",
@@ -129,7 +129,7 @@ func TestNewsFeedRepository_InsertDuplicateArticle_Failure(t *testing.T) {
 		Type:       "",
 		Label:      "",
 		Created:    0,
-		Update:     0,
+		Updated:    0,
 		Href:       "",
 		Body:       "",
 		Status:     "",
@@ -178,15 +178,15 @@ func TestNewsFeedRepository_PersistAssociations_Success(t *testing.T) {
 	repo, _ := NewNewsFeedRepository(db)
 
 	err = repo.Insert(&Article{
-		ExternalId:     "12",
-		UUID:           "595b7871-b652-4c06-80b9-6260db2cd4e6",
-		Type:           "",
-		Label:          "",
-		Created:        0,
-		Update:         0,
-		Href:           "",
-		Body:           "",
-		Status:         "",
+		ExternalId: "12",
+		UUID:       "595b7871-b652-4c06-80b9-6260db2cd4e6",
+		Type:       "",
+		Label:      "",
+		Created:    0,
+		Updated:    0,
+		Href:       "",
+		Body:       "",
+		Status:     "",
 		AdminOfficials: []AdminOfficial{
 			{
 				ExternalId: "9",
@@ -212,15 +212,15 @@ func TestNewsFeedRepository_PersistAssociations_Success(t *testing.T) {
 	assert.Equal(t, 2, len(adminOfficials))
 
 	err = repo.Insert(&Article{
-		ExternalId:     "13",
-		UUID:           "5228c838-5cda-4c6d-8aed-2c0c55a51b31",
-		Type:           "",
-		Label:          "",
-		Created:        0,
-		Update:         0,
-		Href:           "",
-		Body:           "",
-		Status:         "",
+		ExternalId: "13",
+		UUID:       "5228c838-5cda-4c6d-8aed-2c0c55a51b31",
+		Type:       "",
+		Label:      "",
+		Created:    0,
+		Updated:    0,
+		Href:       "",
+		Body:       "",
+		Status:     "",
 		AdminOfficials: []AdminOfficial{
 			{
 				ExternalId: "9",
