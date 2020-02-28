@@ -11,6 +11,10 @@ type Config struct {
 		Endpoint string `yaml:"endpoint" envconfig:"optional"`
 		Key string `yaml:"key" envconfig:"optional"`
 	} `yaml:"api"`
+	Db struct{
+		Dialect string `yaml:"dialect" envconfig:"optional"`
+		Host string `yaml:"host" envconfig:"optional"`
+	}
 }
 
 func NewConfig(file string) *Config {

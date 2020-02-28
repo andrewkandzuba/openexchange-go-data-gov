@@ -51,4 +51,6 @@ TBD
  
 ## Components
 
-- [feed/commerce](pkg/feed/commerce.go) - Commerce API News Feed puller and streamer.
+- [config](pkg/config) - Configuration helper to init application properties from YAML and/or environment variables.  
+- [feed](pkg/feed) - Commerce API News Feed puller and streamer.
+- [db](pkg/db) - News Feed database repository. 
