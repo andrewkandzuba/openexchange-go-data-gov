@@ -1,0 +1,6 @@
+api:
+  endpoint: "http://1.1.1.1"
+  key: "SOME_KEY_FROM_FILE"
+db:
+  dialect: "sqlite3"
+  host: "test.db"

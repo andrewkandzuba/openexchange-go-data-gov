@@ -1,0 +1,3 @@
+api:
+  endpoint: "https://localhost:8080/api"
+  key: "DEMO_KEY"

@@ -1,12 +1,19 @@
 package feed
 
 import (
+	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 )
 
+const (
+	endpoint = "http://127.0.0.1:8080/api"
+	apiKey   = "TEST_KEY"
+)
+
 func TestCommerceApi_NewInstance_Success(t *testing.T) {
+
 	api, err := NewCommerceApi(endpoint, apiKey)
 
 	assert.NotNil(t, api)
@@ -22,7 +29,7 @@ func TestCommerceApi_NewInstance_Failure(t *testing.T) {
 	assert.Nil(t, api)
 	assert.NotNil(t, err)
 	assert.True(t, strings.Contains(err.Error(), "Endpoint: zero value"))
-	assert.True(t, strings.Contains(err.Error(), " ApiKey: zero value"))
+	assert.True(t, strings.Contains(err.Error(), "ApiKey: zero value"))
 
 	api, err = NewCommerceApi(endpoint, "")
 
@@ -38,7 +45,9 @@ func TestCommerceApi_NewInstance_Failure(t *testing.T) {
 }
 
 func TestCommerceApi_News_Success(t *testing.T) {
-	api, _ := NewCommerceApi(localHost, apiKey)
+	cfg := config.NewConfig("testdata/application-test.yaml")
+
+	api, _ := NewCommerceApi(cfg.Api.Endpoint, cfg.Api.Key)
 
 	body, err := api.News()
 

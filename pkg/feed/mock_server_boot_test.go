@@ -10,13 +10,6 @@ import (
 	"testing"
 )
 
-const (
-	endpoint = "http://localhost:8080"
-	apiKey   = "DEMO_KEY"
-)
-
-var localHost = endpoint
-
 func TestMain(m *testing.M) {
 	handle, err := os.Open("testdata/news.json")
 	if err != nil {
@@ -37,7 +30,8 @@ func TestMain(m *testing.M) {
 			rw.WriteHeader(404)
 		}
 	}))
-	localHost = server.URL
+
+	_ = os.Setenv("API_ENDPOINT", server.URL)
 
 	code := m.Run()
 	defer server.Close()
