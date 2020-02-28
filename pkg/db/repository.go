@@ -9,14 +9,14 @@ import (
 type Article struct {
 	gorm.Model
 	ExternalId     string
-	UUID    string `gorm:"unique_index:idx_article_uuid"`
-	Type    string
-	Label   string
-	Created int
-	Update  int
-	Href    string
-	Body    string
-	Status  string
+	UUID           string `gorm:"unique_index:idx_article_uuid"`
+	Type           string
+	Label          string
+	Created        int64
+	Updated        int64
+	Href           string
+	Body           string
+	Status         string
 	AdminOfficials []AdminOfficial `gorm:"many2many:article_admin_officials;"`
 }
 
