@@ -14,7 +14,10 @@ type Config struct {
 	Db struct{
 		Dialect string `yaml:"dialect" envconfig:"optional"`
 		Host string `yaml:"host" envconfig:"optional"`
-	}
+	} `yaml:"db"`
+	Web struct{
+		Host string `yaml:"host" envconfig:"optional"`
+	} `yaml:"web"`
 }
 
 func NewConfig(file string) *Config {

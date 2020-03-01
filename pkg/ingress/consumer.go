@@ -9,10 +9,10 @@ import (
 )
 
 type NewsFeedConsumer struct {
-	Repo *db.NewsFeedRepository `validate:"nonzero"`
+	Repo *db.ArticleRepository `validate:"nonzero"`
 }
 
-func NewNewsFeedConsumer(repo *db.NewsFeedRepository) (*NewsFeedConsumer, error) {
+func NewNewsFeedConsumer(repo *db.ArticleRepository) (*NewsFeedConsumer, error) {
 	instance := &NewsFeedConsumer{repo}
 
 	if errs := validator.Validate(instance); errs != nil {

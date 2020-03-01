@@ -13,7 +13,7 @@ import (
 )
 
 func Test_NewInstance_Success(t *testing.T) {
-	repo := db2.NewsFeedRepository{
+	repo := db2.ArticleRepository{
 		&gorm.DB{},
 	}
 
@@ -24,7 +24,7 @@ func Test_NewInstance_Success(t *testing.T) {
 }
 
 func Test_NewInstance_Failure(t *testing.T) {
-	repo := db2.NewsFeedRepository{
+	repo := db2.ArticleRepository{
 		nil,
 	}
 
@@ -72,7 +72,7 @@ func Test_ConsumeFromStream_Success(t *testing.T) {
 	}()
 	db.AutoMigrate(&db2.Article{}, &db2.AdminOfficial{})
 
-	repo, _ := db2.NewNewsFeedRepository(db)
+	repo, _ := db2.NewArticleRepository(db)
 	consumer, _ := NewNewsFeedConsumer(repo)
 
 	err = consumer.From(ch)
