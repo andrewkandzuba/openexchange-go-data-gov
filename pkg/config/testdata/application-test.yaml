@@ -4,3 +4,5 @@ api:
 db:
   dialect: "sqlite3"
   host: "test.db"
+web:
+  address: "http://localhost:8080"

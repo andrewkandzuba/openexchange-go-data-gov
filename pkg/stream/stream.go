@@ -1,17 +1,18 @@
-package feed
+package stream
 
 import (
 	"errors"
+	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/connector"
 	"github.com/buger/jsonparser"
 	"gopkg.in/validator.v2"
 	"log"
 )
 
 type CommerceStream struct {
-	Sink *CommerceApi `validate:"nonnil"`
+	Sink *connector.Connector `validate:"nonnil"`
 }
 
-func NewCommerceStream(sink *CommerceApi) (*CommerceStream, error) {
+func NewCommerceStream(sink *connector.Connector) (*CommerceStream, error) {
 	instance := &CommerceStream{
 		Sink: sink,
 	}
@@ -37,11 +38,12 @@ func (cs *CommerceStream) Stream() chan string {
 		}
 
 		_, err = jsonparser.ArrayEach([]byte(json), func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			log.Println("New article has been found: " + string(value))
 			ch <- string(value)
 		}, "data")
 		if err != nil {
 			// @ToDo: add test to handle this use case.
-			log.Fatal(err)
+			log.Print(err)
 		}
 
 	}()

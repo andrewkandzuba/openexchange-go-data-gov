@@ -1,4 +1,4 @@
-package feed
+package connector_test
 
 import (
 	"bufio"

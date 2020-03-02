@@ -4,36 +4,45 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 	"gopkg.in/validator.v2"
+	"log"
 )
 
-type Article struct {
-	gorm.Model
-	ExternalId     string
-	UUID           string `gorm:"unique_index:idx_article_uuid"`
-	Type           string
-	Label          string
-	Created        int64
-	Updated        int64
-	Href           string
-	Body           string
-	Status         string
-	AdminOfficials []AdminOfficial `gorm:"many2many:article_admin_officials;"`
-}
+type (
+	ArticleRepositoryImpl interface {
+		Insert(article *Article) error
+		FindAll() ([]Article, error)
+		Find(id int) (*Article, error)
+	}
 
-type AdminOfficial struct {
-	gorm.Model
-	ExternalId string `gorm:"unique_index:idx_admin_official_uuid"`
-	Label   string
-	Href    string
-	Articles []Article `gorm:"many2many:article_admin_officials;"`
-}
+	Article struct {
+		gorm.Model
+		ExternalId     string          `json:"externalId"`
+		UUID           string          `json:"uuid" gorm:"unique_index:idx_article_uuid"`
+		Type           string          `json:"type"`
+		Label          string          `json:"label"`
+		Created        int64           `json:"created"`
+		Updated        int64           `json:"updated"`
+		Href           string          `json:"href"`
+		Body           string          `json:"body"`
+		Status         string          `json:"status"`
+		AdminOfficials []AdminOfficial `json:"adminOfficials" gorm:"many2many:article_admin_officials;"`
+	}
 
-type NewsFeedRepository struct {
-	Db *gorm.DB `validate:"nonzero"`
-}
+	AdminOfficial struct {
+		gorm.Model
+		ExternalId string    `json:"externalId" gorm:"unique_index:idx_admin_official_uuid"`
+		Label      string    `json:"label"`
+		Href       string    `json:"href"`
+		Articles   []Article `json:"-" gorm:"many2many:article_admin_officials;"`
+	}
 
-func NewNewsFeedRepository(db *gorm.DB) (*NewsFeedRepository, error) {
-	instance := &NewsFeedRepository{Db:db}
+	ArticleRepository struct {
+		Db *gorm.DB `validate:"nonzero"`
+	}
+)
+
+func NewArticleRepository(db *gorm.DB) (*ArticleRepository, error) {
+	instance := &ArticleRepository{Db: db}
 
 	if errs := validator.Validate(instance); errs != nil {
 		// ToDo: Create a test to handle log.Fatal(...)
@@ -43,10 +52,28 @@ func NewNewsFeedRepository(db *gorm.DB) (*NewsFeedRepository, error) {
 	return instance, nil
 }
 
-func (r *NewsFeedRepository) Insert(article *Article) error {
-	for i := 0; i< len(article.AdminOfficials); i++ {
-		_ = r.Db.Where("external_id=?", article.AdminOfficials[i] .ExternalId).Find(&article.AdminOfficials[i])
+func (r *ArticleRepository) Insert(article *Article) error {
+	for i := 0; i < len(article.AdminOfficials); i++ {
+		_ = r.Db.Where("external_id=?", article.AdminOfficials[i].ExternalId).Find(&article.AdminOfficials[i])
 	}
 	res := r.Db.Create(&article)
+	if res.Error == nil {
+		log.Print("New article has been inserted")
+	}
 	return res.Error
+}
+
+func (r *ArticleRepository) FindAll() ([]Article, error) {
+	var articles []Article
+	res := r.Db.Find(&articles)
+	return articles, res.Error
+}
+
+func (r *ArticleRepository) Find(id int) (*Article, error) {
+	var article Article
+	res := r.Db.First(&article, id)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return &article, nil
 }

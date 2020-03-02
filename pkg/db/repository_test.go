@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestNewNewsFeedRepository_NewInstance_Success(t *testing.T) {
+func Test_NewInstance_Success(t *testing.T) {
 	cfg := config.NewConfig("testdata/application-test.yaml")
 
 	db, err := gorm.Open(cfg.Db.Dialect, cfg.Db.Host)
@@ -18,20 +18,20 @@ func TestNewNewsFeedRepository_NewInstance_Success(t *testing.T) {
 		panic(err)
 	}
 
-	repo, err := NewNewsFeedRepository(db)
+	repo, err := NewArticleRepository(db)
 	assert.Nil(t, err)
 	assert.NotNil(t, repo)
 }
 
-func TestNewsFeedRepository_NewInstance_InvalidArgument_Failure(t *testing.T) {
-	repo, err := NewNewsFeedRepository(nil)
+func Test_NewInstance_InvalidArgument_Failure(t *testing.T) {
+	repo, err := NewArticleRepository(nil)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, "Db: zero value", err.Error())
 	assert.Nil(t, repo)
 }
 
-func TestNewsFeedRepository_InsertArticle_Success(t *testing.T) {
+func Test_InsertArticle_Success(t *testing.T) {
 	cfg := config.NewConfig("testdata/application-test.yaml")
 
 	db, err := gorm.Open(cfg.Db.Dialect, cfg.Db.Host)
@@ -43,7 +43,7 @@ func TestNewsFeedRepository_InsertArticle_Success(t *testing.T) {
 	}()
 	db.AutoMigrate(&Article{}, &AdminOfficial{})
 
-	repo, _ := NewNewsFeedRepository(db)
+	repo, _ := NewArticleRepository(db)
 
     err = repo.Insert(&Article{
 		ExternalId: "12",
@@ -109,7 +109,7 @@ func TestNewsFeedRepository_InsertArticle_Success(t *testing.T) {
 	assert.Equal(t, "595b7871-b652-4c06-80b9-6260db2cd4e6", adminOfficial.Articles[0].UUID)
 }
 
-func TestNewsFeedRepository_InsertDuplicateArticle_Failure(t *testing.T) {
+func Test_InsertDuplicateArticle_Failure(t *testing.T) {
 	cfg := config.NewConfig("testdata/application-test.yaml")
 
 	db, err := gorm.Open(cfg.Db.Dialect, cfg.Db.Host)
@@ -121,7 +121,7 @@ func TestNewsFeedRepository_InsertDuplicateArticle_Failure(t *testing.T) {
 	}()
 	db.AutoMigrate(&Article{}, &AdminOfficial{})
 
-	repo, _ := NewNewsFeedRepository(db)
+	repo, _ := NewArticleRepository(db)
 
 	article := &Article{
 		ExternalId: "12",
@@ -163,7 +163,7 @@ func TestNewsFeedRepository_InsertDuplicateArticle_Failure(t *testing.T) {
 	assert.Equal(t, 1, len(articles))
 }
 
-func TestNewsFeedRepository_PersistAssociations_Success(t *testing.T) {
+func Test_PersistAssociations_Success(t *testing.T) {
 	cfg := config.NewConfig("testdata/application-test.yaml")
 
 	db, err := gorm.Open(cfg.Db.Dialect, cfg.Db.Host)
@@ -175,7 +175,7 @@ func TestNewsFeedRepository_PersistAssociations_Success(t *testing.T) {
 	}()
 	db.AutoMigrate(&Article{}, &AdminOfficial{})
 
-	repo, _ := NewNewsFeedRepository(db)
+	repo, _ := NewArticleRepository(db)
 
 	err = repo.Insert(&Article{
 		ExternalId: "12",
@@ -245,6 +245,150 @@ func TestNewsFeedRepository_PersistAssociations_Success(t *testing.T) {
 	db.Preload("Articles").Where("external_id=?", "9").Find(&adminOfficial)
 
 	assert.Equal(t, 2, len(adminOfficial.Articles))
+}
+
+func Test_FindAll_Success(t *testing.T) {
+	cfg := config.NewConfig("testdata/application-test.yaml")
+
+	db, err := gorm.Open(cfg.Db.Dialect, cfg.Db.Host)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		db.DropTableIfExists(&Article{}, &AdminOfficial{})
+	}()
+	db.AutoMigrate(&Article{}, &AdminOfficial{})
+
+	repo, _ := NewArticleRepository(db)
+
+	_ = repo.Insert(&Article{
+		ExternalId: "12",
+		UUID:       "595b7871-b652-4c06-80b9-6260db2cd4e6",
+		Type:       "",
+		Label:      "",
+		Created:    0,
+		Updated:    0,
+		Href:       "",
+		Body:       "",
+		Status:     "",
+		AdminOfficials: []AdminOfficial{
+			{
+				ExternalId: "9",
+				Label:      "James Bond",
+				Href:       "",
+			},
+			{
+				ExternalId: "10",
+				Label:      "Eric Clapton",
+				Href:       "",
+			},
+		},
+	})
+
+	_ = repo.Insert(&Article{
+		ExternalId: "13",
+		UUID:       "5228c838-5cda-4c6d-8aed-2c0c55a51b31",
+		Type:       "",
+		Label:      "",
+		Created:    0,
+		Updated:    0,
+		Href:       "",
+		Body:       "",
+		Status:     "",
+		AdminOfficials: []AdminOfficial{
+			{
+				ExternalId: "9",
+				Label:      "James Bond",
+				Href:       "",
+			},
+			{
+				ExternalId: "13",
+				Label:      "Jon Bonjovi",
+				Href:       "",
+			},
+		},
+	})
+
+	articles, err := repo.FindAll()
+
+	assert.Nil(t, err)
+	assert.NotNil(t, articles)
+
+	assert.Equal(t, 2, len(articles))
+}
+
+func Test_FindById_Success(t *testing.T) {
+	cfg := config.NewConfig("testdata/application-test.yaml")
+
+	db, err := gorm.Open(cfg.Db.Dialect, cfg.Db.Host)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		db.DropTableIfExists(&Article{}, &AdminOfficial{})
+	}()
+	db.AutoMigrate(&Article{}, &AdminOfficial{})
+
+	repo, _ := NewArticleRepository(db)
+
+	_ = repo.Insert(&Article{
+		ExternalId: "12",
+		UUID:       "595b7871-b652-4c06-80b9-6260db2cd4e6",
+		Type:       "",
+		Label:      "",
+		Created:    0,
+		Updated:    0,
+		Href:       "",
+		Body:       "",
+		Status:     "",
+		AdminOfficials: []AdminOfficial{
+			{
+				ExternalId: "9",
+				Label:      "James Bond",
+				Href:       "",
+			},
+			{
+				ExternalId: "10",
+				Label:      "Eric Clapton",
+				Href:       "",
+			},
+		},
+	})
+
+	_ = repo.Insert(&Article{
+		ExternalId: "13",
+		UUID:       "5228c838-5cda-4c6d-8aed-2c0c55a51b31",
+		Type:       "",
+		Label:      "",
+		Created:    0,
+		Updated:    0,
+		Href:       "",
+		Body:       "",
+		Status:     "",
+		AdminOfficials: []AdminOfficial{
+			{
+				ExternalId: "9",
+				Label:      "James Bond",
+				Href:       "",
+			},
+			{
+				ExternalId: "13",
+				Label:      "Jon Bonjovi",
+				Href:       "",
+			},
+		},
+	})
+
+	article, err := repo.Find(1)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, article)
+
+	article, err = repo.Find(100)
+
+	assert.NotNil(t, err)
+	assert.Equal(t, "record not found", err.Error())
+	assert.Nil(t, article)
 }
 
 

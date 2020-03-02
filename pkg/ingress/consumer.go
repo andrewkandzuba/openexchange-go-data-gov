@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-type NewsFeedConsumer struct {
-	Repo *db.NewsFeedRepository `validate:"nonzero"`
+type ArticleFeedConsumer struct {
+	Repo *db.ArticleRepository `validate:"nonzero"`
 }
 
-func NewNewsFeedConsumer(repo *db.NewsFeedRepository) (*NewsFeedConsumer, error) {
-	instance := &NewsFeedConsumer{repo}
+func NewArticleFeedConsumer(repo *db.ArticleRepository) (*ArticleFeedConsumer, error) {
+	instance := &ArticleFeedConsumer{repo}
 
 	if errs := validator.Validate(instance); errs != nil {
 		// ToDo: Create a test to handle log.Fatal(...)
@@ -23,7 +23,7 @@ func NewNewsFeedConsumer(repo *db.NewsFeedRepository) (*NewsFeedConsumer, error)
 	return instance, nil
 }
 
-func (c *NewsFeedConsumer) From(ch chan string) error {
+func (c *ArticleFeedConsumer) From(ch chan string) error {
 	var ex error
 RangeLoop:
 	for {
@@ -43,7 +43,7 @@ RangeLoop:
 	return ex
 }
 
-func (c *NewsFeedConsumer) save(json string) error {
+func (c *ArticleFeedConsumer) save(json string) error {
 	var err error
 
 	a := &db.Article{}
