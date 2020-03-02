@@ -1,22 +1,23 @@
-package ci
+package tests
 
 import (
 	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/config"
-	feed2 "github.com/andrewkandzuba/openexchange-go-data-gov/pkg/feed"
+	feed2 "github.com/andrewkandzuba/openexchange-go-data-gov/pkg/stream"
+	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/connector"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
 	"time"
 )
 
-func TestCommerceStream_Ci(t *testing.T) {
+func Test_CommerceStream_Ci(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 
 	cfg := config.NewConfig("testdata/application-ci.yaml")
 
-	api, _ := feed2.NewCommerceApi(cfg.Api.Endpoint, cfg.Api.Key)
+	api, _ := connector.NewConnector(cfg.Api.Endpoint, cfg.Api.Key)
 	cs, _ := feed2.NewCommerceStream(api)
 
 	wgReceivers := sync.WaitGroup{}

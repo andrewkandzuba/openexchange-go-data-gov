@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 	"gopkg.in/validator.v2"
+	"log"
 )
 
 type (
@@ -56,6 +57,9 @@ func (r *ArticleRepository) Insert(article *Article) error {
 		_ = r.Db.Where("external_id=?", article.AdminOfficials[i].ExternalId).Find(&article.AdminOfficials[i])
 	}
 	res := r.Db.Create(&article)
+	if res.Error == nil {
+		log.Print("New article has been inserted")
+	}
 	return res.Error
 }
 

@@ -1,17 +1,18 @@
-package feed
+package stream
 
 import (
 	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/config"
+	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/connector"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
 	"time"
 )
 
-func TestCommerceStream_NewInstance_Success(t *testing.T) {
+func Test_NewInstance_Success(t *testing.T) {
 	cfg := config.NewConfig("testdata/application-test.yaml")
 
-	api := &CommerceApi{
+	api := &connector.Connector{
 		cfg.Api.Endpoint,
 		cfg.Api.Key,
 	}
@@ -23,7 +24,7 @@ func TestCommerceStream_NewInstance_Success(t *testing.T) {
 	assert.Equal(t, api, cs.Sink)
 }
 
-func TestNewCommerceStream_NewInstance_SinkIsNil_Failure(t *testing.T) {
+func Test_NewInstance_SinkIsNil_Failure(t *testing.T) {
 	cs, err := NewCommerceStream(nil)
 
 	assert.Nil(t, cs)
@@ -31,10 +32,10 @@ func TestNewCommerceStream_NewInstance_SinkIsNil_Failure(t *testing.T) {
 	assert.Equal(t, "Sink: zero value", err.Error())
 }
 
-func TestCommerceStream_ConsumeJsonFromSource_Success(t *testing.T) {
+func Test_ConsumeJsonFromSource_Success(t *testing.T) {
 	cfg := config.NewConfig("testdata/application-test.yaml")
 
-	api, _ := NewCommerceApi(cfg.Api.Endpoint, cfg.Api.Key)
+	api, _ := connector.NewConnector(cfg.Api.Endpoint, cfg.Api.Key)
 	cs, _ := NewCommerceStream(api)
 
 	wgReceivers := sync.WaitGroup{}

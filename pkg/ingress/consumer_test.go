@@ -17,7 +17,7 @@ func Test_NewInstance_Success(t *testing.T) {
 		&gorm.DB{},
 	}
 
-	sink, err := NewNewsFeedConsumer(&repo)
+	sink, err := NewArticleFeedConsumer(&repo)
 
 	assert.NotNil(t, sink)
 	assert.Nil(t, err)
@@ -28,7 +28,7 @@ func Test_NewInstance_Failure(t *testing.T) {
 		nil,
 	}
 
-	sink, err := NewNewsFeedConsumer(&repo)
+	sink, err := NewArticleFeedConsumer(&repo)
 
 	assert.Nil(t, sink)
 	assert.NotNil(t, err)
@@ -73,7 +73,7 @@ func Test_ConsumeFromStream_Success(t *testing.T) {
 	db.AutoMigrate(&db2.Article{}, &db2.AdminOfficial{})
 
 	repo, _ := db2.NewArticleRepository(db)
-	consumer, _ := NewNewsFeedConsumer(repo)
+	consumer, _ := NewArticleFeedConsumer(repo)
 
 	err = consumer.From(ch)
 

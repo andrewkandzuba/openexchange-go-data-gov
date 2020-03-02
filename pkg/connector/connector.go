@@ -1,4 +1,4 @@
-package feed
+package connector
 
 import (
 	"errors"
@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-type CommerceApi struct {
+type Connector struct {
 	Endpoint string `validate:"nonzero"`
 	ApiKey string `validate:"nonzero"`
 }
 
-func NewCommerceApi(endpoint string, apiKey string) (*CommerceApi, error)  {
+func NewConnector(endpoint string, apiKey string) (*Connector, error)  {
 
-	instance := &CommerceApi{
+	instance := &Connector{
 		Endpoint: endpoint,
 		ApiKey:   apiKey,
 	}
@@ -27,7 +27,7 @@ func NewCommerceApi(endpoint string, apiKey string) (*CommerceApi, error)  {
 	return instance, nil
 }
 
-func (api* CommerceApi) News() (string, error) {
+func (api*Connector) News() (string, error) {
 
 	client := resty.New()
 

@@ -23,6 +23,5 @@ func TestMain(m *testing.M){
 	_ = os.Setenv("DB_DIALECT", dialect)
 
 	code := m.Run()
-	defer db.Close()
 	os.Exit(code)
 }

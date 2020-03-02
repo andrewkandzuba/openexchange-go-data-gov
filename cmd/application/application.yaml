@@ -1,0 +1,8 @@
+api:
+  endpoint: "https://api.commerce.gov/api"
+  key: "DEMO_KEY"
+db:
+  dialect: "sqlite3"
+  host: "test.db"
+web:
+  address: "localhost:8080"

@@ -16,7 +16,7 @@ type Config struct {
 		Host string `yaml:"host" envconfig:"optional"`
 	} `yaml:"db"`
 	Web struct{
-		Host string `yaml:"host" envconfig:"optional"`
+		Address string `yaml:"address" envconfig:"optional"`
 	} `yaml:"web"`
 }
 
