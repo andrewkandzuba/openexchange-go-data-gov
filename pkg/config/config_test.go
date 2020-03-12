@@ -16,4 +16,5 @@ func TestConfig_NewConfig_Environment_Success(t *testing.T) {
 	assert.Equal(t, "sqlite3", cfg.Db.Dialect)
 	assert.Equal(t, "test.db", cfg.Db.Host)
 	assert.Equal(t, "http://localhost:8080", cfg.Web.Address)
+	assert.Equal(t, "localhost:9092", cfg.Kafka.BootstrapServers)
 }

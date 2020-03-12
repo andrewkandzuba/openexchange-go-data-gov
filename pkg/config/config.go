@@ -18,6 +18,9 @@ type Config struct {
 	Web struct{
 		Address string `yaml:"address" envconfig:"optional"`
 	} `yaml:"web"`
+	Kafka struct{
+		BootstrapServers string `yaml:"bootstrap-servers" envconfig:"optional"`
+	} `yaml:"kafka"`
 }
 
 func NewConfig(file string) *Config {

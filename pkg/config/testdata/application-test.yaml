@@ -6,3 +6,5 @@ db:
   host: "test.db"
 web:
   address: "http://localhost:8080"
+kafka:
+  bootstrap-servers: "localhost:9092"
