@@ -44,6 +44,9 @@ The special web service will host REST API to query articles:
     - > git clone https://github.com/andrewkandzuba/openexchange-go-data-gov
     - > cd openexchange-go-data-gov
     - > ./build.sh
+
+- If your environment is Window build like this:
+    - > CGO_ENABLED=1;CC=x86_64-w64-mingw32-gcc ./build.sh
  
 ### Google Cloud Build 
 
