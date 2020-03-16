@@ -1,7 +1,8 @@
-package channel
+package kafka
 
 import (
 	"github.com/Shopify/sarama"
+	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/channel"
 	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -29,7 +30,7 @@ func Test_Send_Success(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, p)
 
-	err = p.Send("test", "hello!")
+	err = channel.Producer.Send(p, "test", "hello!")
 	assert.Nil(t, err)
 }
 

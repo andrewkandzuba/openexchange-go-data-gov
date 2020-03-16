@@ -3,6 +3,7 @@ package tests
 import (
 	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/channel"
 	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/config"
+	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/kafka"
 	"github.com/stretchr/testify/assert"
 	"os/exec"
 	"testing"
@@ -21,10 +22,10 @@ func Test_ProduceToKafka_Success(t *testing.T) {
 	}()
 
 	cfg := config.NewConfig("testdata/application-ci.yaml")
-	cp, err := channel.NewKafkaProducer(cfg.Kafka.BootstrapServers)
+	cp, err := kafka.NewKafkaProducer(cfg.Kafka.BootstrapServers)
 	assert.Nil(t, err)
 	assert.NotNil(t, cp)
 
-	err = cp.Send("test", "hello!")
+	err = channel.Producer.Send(cp, "test", "hello!")
 	assert.NotNil(t, err)
 }
