@@ -1,9 +1,8 @@
 package channel
 
-type Producer interface {
-	Send(topic string, data string) error
-}
+import "io"
 
-func Send(p Producer, topic string, data string) error {
-	return p.Send(topic, data)
+type Producer interface {
+	io.Closer
+	Send(topic string, data string) error
 }

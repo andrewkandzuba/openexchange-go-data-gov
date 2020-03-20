@@ -1,9 +1,8 @@
 package channel
 
-type Consumer interface {
-	Subscribe(topic string, listener *Listener)
-}
+import "io"
 
-func Subscribe(c Consumer, topic string, listener *Listener) {
-	c.Subscribe(topic, listener)
+type Consumer interface {
+	io.Closer
+	Subscribe(topic string, listener *Listener)
 }
