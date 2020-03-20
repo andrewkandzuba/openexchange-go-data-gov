@@ -27,5 +27,11 @@ func Test_ProduceToKafka_Success(t *testing.T) {
 	assert.NotNil(t, cp)
 
 	err = channel.Producer.Send(cp, "test", "hello!")
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
+
+	err = channel.Producer.Send(cp, "test", "hello again!")
+	assert.Nil(t, err)
+
+	err = channel.Producer.Close(cp)
+	assert.Nil(t, err)
 }
