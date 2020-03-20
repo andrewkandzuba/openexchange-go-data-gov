@@ -20,6 +20,10 @@ type Config struct {
 	} `yaml:"web"`
 	Kafka struct{
 		BootstrapServers string `yaml:"bootstrap-servers" envconfig:"optional"`
+		Consumer struct{
+			Topics string `yaml:"topics" envconfig:"optional"`
+			Group string `yaml:"group" envconfig:"optional"`
+		} `yaml:"consumer"`
 	} `yaml:"kafka"`
 }
 
@@ -35,7 +39,9 @@ func readFile(cfg *Config, file string) {
 	if err != nil {
 		processError(err)
 	}
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 
 	decoder := yaml.NewDecoder(f)
 	err = decoder.Decode(cfg)
