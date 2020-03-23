@@ -4,29 +4,29 @@ import (
 	"context"
 	"errors"
 	"github.com/Shopify/sarama"
-	"github.com/andrewkandzuba/openexchange-go-data-gov/pkg/channel"
 	"gopkg.in/validator.v2"
 	"log"
-	"os"
-	"os/signal"
 	"strings"
 	"sync"
-	"syscall"
 )
 
 type consumer struct {
 	BootstrapServers string `validate:"nonzero"`
-	Topics string `validate:"nonzero"`
-	Group string `validate:"nonzero"`
-	listeners sync.Map
-	ready chan bool
+	Topics           string `validate:"nonzero"`
+	Group            string `validate:"nonzero"`
+	listeners        sync.Map
+	client           struct {
+		ready chan bool
+		cg    sarama.ConsumerGroup
+		cancel context.CancelFunc
+	}
 }
 
 func NewKafkaConsumer(bootstrapServers string, topics string, group string) (*consumer, error) {
 	instance := &consumer{
 		BootstrapServers: bootstrapServers,
-		Topics: topics,
-		Group: group,
+		Topics:           topics,
+		Group:            group,
 	}
 
 	if errs := validator.Validate(instance); errs != nil {
@@ -36,31 +36,24 @@ func NewKafkaConsumer(bootstrapServers string, topics string, group string) (*co
 	return instance, nil
 }
 
-func (kc *consumer) Subscribe(topic string, listener *channel.Listener)  {
-	kc.listeners.LoadOrStore(topic, listener)
+func (kc *consumer) Subscribe(topic string, fn func(value interface{})) {
+	kc.listeners.LoadOrStore(topic, fn)
 }
 
-func (kc *consumer) start()  {
+func (kc *consumer) Start() {
 	var config = sarama.NewConfig()
 	config.Version = sarama.MaxVersion
-
-	ready := make(chan bool)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	client, err := sarama.NewConsumerGroup(strings.Split(kc.BootstrapServers, ","), kc.Group, config)
 	if err != nil {
 		log.Panicf("Error creating consumer group client: %v", err)
 	}
-	defer func() {
-		if err = client.Close(); err != nil {
-			log.Panicf("Error closing client: %v", err)
-		}
-	}()
+	kc.client.cg = client
+	kc.client.ready = make(chan bool)
+	kc.client.cancel = cancel
 
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
 		for {
 			if err := client.Consume(ctx, strings.Split(kc.Topics, ","), kc); err != nil {
 				log.Panicf("Error from consumer: %v", err)
@@ -68,26 +61,23 @@ func (kc *consumer) start()  {
 			if ctx.Err() != nil {
 				return
 			}
-			ready = make(chan bool)
+			kc.client.ready = make(chan bool)
 		}
 	}()
-	<-ready
+	<-kc.client.ready
 	log.Println("Sarama consumer up and running!...")
+}
 
-	sigterm := make(chan os.Signal, 1)
-	signal.Notify(sigterm, syscall.SIGINT, syscall.SIGTERM)
-	select {
-	case <-ctx.Done():
-		log.Println("terminating: context cancelled")
-	case <-sigterm:
-		log.Println("terminating: via signal")
+func (kc *consumer) Close() error {
+	kc.client.cancel()
+	if err := kc.client.cg.Close(); err != nil {
+		log.Panicf("Error closing client: %v", err)
 	}
-	cancel()
-	wg.Wait()
+	return nil
 }
 
 func (kc *consumer) Setup(sarama.ConsumerGroupSession) error {
-	close(kc.ready)
+	close(kc.client.ready)
 	return nil
 }
 
@@ -98,6 +88,10 @@ func (kc *consumer) Cleanup(sarama.ConsumerGroupSession) error {
 func (kc *consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for message := range claim.Messages() {
 		log.Printf("Message claimed: value = %s, timestamp = %v, topic = %s", string(message.Value), message.Timestamp, message.Topic)
+		if v, ok := kc.listeners.Load(message.Topic); ok {
+			var fn = v.(func(value interface{}))
+			fn(message)
+		}
 		session.MarkMessage(message, "")
 	}
 	return nil

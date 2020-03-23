@@ -4,5 +4,5 @@ import "io"
 
 type Consumer interface {
 	io.Closer
-	Subscribe(topic string, listener *Listener)
+	Subscribe(topic string, fn func (value interface{}))
 }

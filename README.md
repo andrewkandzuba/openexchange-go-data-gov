@@ -33,20 +33,24 @@ The special web service will host REST API to query articles:
     - https://github.com/go-resty/resty 
     - https://github.com/buger/jsonparser 
     - https://github.com/jinzhu/gorm
+    - https://github.com/Shopify/sarama
  
 ## Building instructions
 
 ### Local 
 
 - Install and configure the latest version of [Golang](https://golang.org/dl/) specific to your development environment.
-
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop).
+- Login to [Docker Hub](https://hub.docker.com/).
 - Building steps:
     - > git clone https://github.com/andrewkandzuba/openexchange-go-data-gov
     - > cd openexchange-go-data-gov
     - > ./build.sh
+    - > ./ci
 
 - If your environment is Window build like this:
     - > CGO_ENABLED=1;CC=x86_64-w64-mingw32-gcc ./build.sh
+    - > CGO_ENABLED=1;CC=x86_64-w64-mingw32-gcc ./ci.sh
  
 ### Google Cloud Build 
 
@@ -60,7 +64,10 @@ TBD
 - [ingress](pkg/ingress) - News Articles ingression service.
 - [db](pkg/db) - News Articles database repository. 
 - [web](pkg/web) - Query web service.
+- [channel](pkg/channel) - Producer / Consumer API.
+- [kafka](pkg/kafka) - Producer / Consumer API implementation for Apache Kafka.
 - [main](cmd/application) - Main application to demo how it all works together.  
+- [tests](tests) - Continues Integration tests.  
 
 ## The flow 
 
@@ -83,4 +90,5 @@ TBD
 - Externalize timeouts configuration.
 - Implement retry and back-off for external API.
 - Bug in echo 4.1.15 !!! https://github.com/labstack/echo/issues/1492
+- Replace in memory channel based communication [connector] -> [ingress] by Apache Kafka integration.
 
