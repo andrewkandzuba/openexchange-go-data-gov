@@ -1,8 +1,6 @@
 package kafka
 
 import (
-	"errors"
-	"fmt"
 	"github.com/Shopify/sarama"
 	"gopkg.in/validator.v2"
 	"strings"
@@ -10,6 +8,7 @@ import (
 
 type producer struct {
 	BootstrapServers string `validate:"nonzero"`
+	syncProducer     sarama.SyncProducer
 }
 
 func NewKafkaProducer(bootstrapServers string) (*producer, error) {
@@ -17,29 +16,38 @@ func NewKafkaProducer(bootstrapServers string) (*producer, error) {
 		BootstrapServers: bootstrapServers,
 	}
 
-	if errs := validator.Validate(instance); errs != nil {
-		// ToDo: Create a test to handle log.Fatal(...)
-		return nil, errors.New(errs.Error())
+	if err := validator.Validate(instance); err != nil {
+		return nil, err
+	}
+
+	if err := instance.open(); err != nil {
+		return nil, err
 	}
 
 	return instance, nil
 }
 
-func (p *producer) Send(topic string, data string) error {
+func (p *producer) open() error {
 	var sp, err = sarama.NewSyncProducer(strings.Split(p.BootstrapServers, "\\,"), nil)
 	if err != nil {
 		return err
 	}
-	defer func() {
-		if err := sp.Close(); err != nil {
-			fmt.Println(err.Error())
-		}
-	}()
+	p.syncProducer = sp
+	return nil
+}
 
-	_, _, err = sp.SendMessage(&sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(data)})
-	if err != nil {
+func (p *producer) Send(topic string, data string) error {
+	if _, _, err := p.syncProducer.SendMessage(&sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(data)}); err != nil {
 		return err
 	}
+	return nil
+}
 
+func (p *producer) Close() error {
+	if p.syncProducer != nil {
+		if err := p.syncProducer.Close(); err != nil {
+			return err
+		}
+	}
 	return nil
 }

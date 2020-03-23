@@ -9,14 +9,21 @@ import (
 )
 
 func Test_NewProducer_Success(t *testing.T) {
-	p, err := NewKafkaProducer("")
+	var p, err = NewKafkaProducer("")
 	assert.Nil(t, p)
 	assert.NotNil(t, err)
 	assert.Equal(t, "BootstrapServers: zero value", err.Error())
 
 	cfg := config.NewConfig("testdata/application-test.yaml")
-
 	p, err = NewKafkaProducer(cfg.Kafka.BootstrapServers)
+	assert.Nil(t, p)
+	assert.NotNil(t, err)
+
+	addr, err := mockNewBroker(t, "test")
+	assert.Nil(t, err)
+	assert.NotNil(t, addr)
+
+	p, err = NewKafkaProducer(addr)
 	assert.NotNil(t, p)
 	assert.Nil(t, err)
 }
@@ -31,6 +38,9 @@ func Test_Send_Success(t *testing.T) {
 	assert.NotNil(t, p)
 
 	err = channel.Producer.Send(p, "test", "hello!")
+	assert.Nil(t, err)
+
+	err = channel.Producer.Close(p)
 	assert.Nil(t, err)
 }
 

@@ -30,7 +30,6 @@ func NewKafkaConsumer(bootstrapServers string, topics string, group string) (*co
 	}
 
 	if errs := validator.Validate(instance); errs != nil {
-		// ToDo: Create a test to handle log.Fatal(...)
 		return nil, errors.New(errs.Error())
 	}
 
