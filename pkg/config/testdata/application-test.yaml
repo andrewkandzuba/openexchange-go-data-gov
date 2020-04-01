@@ -1,0 +1,13 @@
+api:
+  endpoint: "http://1.1.1.1"
+  key: "SOME_KEY_FROM_FILE"
+db:
+  dialect: "sqlite3"
+  host: "test.db"
+web:
+  address: "http://localhost:8080"
+kafka:
+  bootstrap-servers: "localhost:9092"
+  consumer:
+    topics: "test-topic"
+    group: "my-consumer-group"

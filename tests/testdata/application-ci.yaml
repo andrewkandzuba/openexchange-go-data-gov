@@ -1,0 +1,8 @@
+api:
+  endpoint: "https://api.commerce.gov/api"
+  key: "DEMO_KEY"
+kafka:
+  bootstrap-servers: "localhost:9092"
+  consumer:
+    topics: "test"
+    group: "my-consumer-group"
